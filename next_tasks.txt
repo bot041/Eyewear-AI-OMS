@@ -1,0 +1,117 @@
+NEXT TASKS / OPTIONAL ENHANCEMENTS
+==================================
+
+Project: AI-Powered Eyewear Order Management System
+Status: Core requirements are implemented and running locally.
+Purpose: This file lists the remaining optional enhancements to make the system production-complete.
+
+
+CORE REQUIREMENTS STATUS
+========================
+
+1. Lens Inventory Management
+   Status: COMPLETE
+   - Inventory table with power, lens_type, lens_index, coating, quantity.
+   - Order creation checks in-house availability and sets inventory_available flag.
+   - Prophet demand forecasting drives restock/overstock recommendations.
+
+2. Order Lifecycle & Dashboard
+   Status: COMPLETE
+   - Full lifecycle: Order Placed -> Inventory Check -> Lens Manufacturing -> Coating -> Frame Assembly -> Quality Check -> Packaging -> Dispatch -> Delivered.
+   - QC failure loop: QC Failed -> Rework -> Quality Check.
+   - Dashboard shows KPIs, AI Risk Center, status distribution pie chart, inventory intelligence.
+   - Orders page supports status updates, delay reason logging, and filtering by status/lens_type/store_location.
+
+3. TAT Prediction & Breach Alerts
+   Status: FUNCTIONAL (mock dispatch)
+   - RandomForestRegressor predicts completion hours.
+   - RandomForestClassifier predicts breach risk score.
+   - Alert records are created for high-risk orders and marked "sent" in the DB.
+   - Email/WhatsApp dispatch is currently mocked; real providers need to be wired.
+
+
+OPTIONAL NEXT TASKS
+===================
+
+1. Wire Real Alert Channels (Email / WhatsApp)
+   Files to touch:
+     - backend/app/services/alerts.py
+     - backend/app/config.py
+     - backend/.env
+   Details:
+     - Add SMTP/Resend config for email alerts.
+     - Add Twilio config for WhatsApp alerts.
+     - Replace the mock send_alert() function with actual provider calls.
+     - Keep mock fallback when no API keys are configured.
+
+2. Add "Time Remaining Against SLA" Display
+   Files to touch:
+     - backend/app/schemas.py
+     - backend/app/routers/orders.py
+     - backend/app/routers/dashboard.py
+     - frontend/app/dashboard/page.tsx
+     - frontend/app/orders/page.tsx
+   Details:
+     - Compute elapsed_hours = now - order.created_at.
+     - Compute remaining_hours = max(0, sla_hours - elapsed_hours).
+     - Add remaining_hours to OrderOut / RiskOrderOut schemas.
+     - Display a countdown/timer in the dashboard risk table and orders table.
+
+3. Map SLA Hours Explicitly to Lens Types
+   Files to touch:
+     - backend/app/seed.py
+     - backend/app/routers/orders.py
+   Details:
+     - Define a lens-type-to-SLA mapping instead of random SLA assignment.
+     - Example: Single Vision = 24h, Bifocal = 48h, Progressive = 72h, Computer Vision = 48h.
+     - Use this mapping when creating orders.
+
+4. Batch / Scheduled Proactive Alerts
+   Files to touch:
+     - backend/app/services/alerts.py
+     - backend/app/main.py
+   Details:
+     - Add a background task (e.g., APScheduler or Celery beat) to scan high-risk orders every 15 minutes.
+     - Auto-create and send alerts without requiring the manual /api/ai/trigger-alerts call.
+
+5. Inventory Management UI Enhancements
+   Files to touch:
+     - frontend/app/inventory/page.tsx
+     - backend/app/routers/inventory.py
+   Details:
+     - Add ability to create new inventory SKUs.
+     - Add bulk stock adjustment with reason.
+     - Show historical consumption chart per SKU.
+
+6. Order Source Analytics
+   Files to touch:
+     - frontend/app/dashboard/page.tsx
+     - backend/app/routers/dashboard.py
+   Details:
+     - Add a chart/table showing order volume by source (Website, Retail Stores, Marketplaces, Sales Representatives).
+
+7. PDF Order Receipt / Invoice
+   Files to touch:
+     - backend/app/routers/orders.py
+     - new backend/app/services/pdf.py
+   Details:
+     - Generate a PDF receipt for each order including prescription, lens details, and SLA prediction.
+
+8. Multi-Language Support for AI Explanations
+   Files to touch:
+     - backend/app/services/kimi_client.py
+   Details:
+     - Allow explanations to be generated in Hindi or regional languages when a locale setting is provided.
+
+
+RECOMMENDED PRIORITY ORDER
+==========================
+
+1. Wire Real Alert Channels (highest business impact)
+2. Add Time Remaining Against SLA Display (improves dashboard usability)
+3. Map SLA Hours to Lens Types (better realism)
+4. Batch / Scheduled Proactive Alerts (reduces manual work)
+5. Inventory Management UI Enhancements
+6. Order Source Analytics
+7. PDF Order Receipt / Invoice
+8. Multi-Language Support

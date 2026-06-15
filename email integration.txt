@@ -1,0 +1,108 @@
+EMAIL INTEGRATION PLAN
+
+Project: AI-Powered Eyewear Order Management System
+
+Recipient:
+operations@company.com
+
+Provider:
+Resend
+
+Trigger:
+Risk Score >= 80%
+
+AI TO EMAIL FLOW
+
+Order Updated
+-> GradientBoostingRegressor (TAT Prediction)
+-> GradientBoostingClassifier (SLA Breach Prediction)
+-> Risk Score Generated
+-> Risk Score >= 80%
+-> Kimi AI Explanation
+-> Kimi AI Recommended Actions
+-> Email Builder
+-> Resend API
+-> operations@company.com
+
+ENVIRONMENT VARIABLES
+
+RESEND_API_KEY=re_xxxxx
+OPERATIONS_EMAIL=operations@company.com
+EMAIL_FROM=alerts@yourdomain.com
+
+DEPENDENCIES
+
+pip install resend
+
+BACKEND FILES
+
+backend/app/services/email_service.py
+
+Functions:
+- send_high_risk_alert()
+- build_alert_email()
+- log_email_delivery()
+
+EMAIL CONTENT
+
+Subject:
+High Risk Order Alert - {order_id}
+
+Sections:
+1. Order Information
+2. AI Risk Assessment
+3. AI Explanation
+4. Recommended Actions
+
+DATABASE TABLE
+
+alerts
+
+Fields:
+- id
+- order_id
+- channel
+- recipient
+- risk_score
+- status
+- created_at
+- sent_at
+
+API ENDPOINT
+
+POST /api/alerts/test
+
+DASHBOARD
+
+KPI:
+Email Alerts Sent Today
+
+Table:
+Recent Alerts
+
+DEMO FLOW
+
+1. Open Order
+2. Run Prediction
+3. Show Risk Score
+4. Show Kimi Explanation
+5. Show Recommended Actions
+6. Trigger Email
+7. Show Email Status
+8. Open Inbox
+
+EVALUATOR PITCH
+
+The system uses a GradientBoostingClassifier to identify high-risk orders.
+When risk exceeds 80%, Kimi AI generates explanations and recommended actions.
+The alert service sends an email through Resend, enabling proactive intervention
+before SLA breaches occur.
+
+FEATURES
+
+- TAT Prediction (GradientBoostingRegressor)
+- SLA Breach Prediction (GradientBoostingClassifier)
+- Demand Forecasting (Prophet)
+- Explainable AI (Kimi)
+- Recommended Actions (Kimi)
+- Automated Email Alerts (Resend)

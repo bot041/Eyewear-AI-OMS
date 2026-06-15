@@ -1,0 +1,484 @@
+
+AI-POWERED EYEWEAR ORDER MANAGEMENT SYSTEM
+FINAL IMPLEMENTATION PLAN (UPDATED)
+
+==================================================
+PROJECT GOAL
+==================================================
+
+Build an AI-powered Order Management System for an eyewear brand that manages:
+1. Lens Inventory Management
+2. Order Lifecycle Tracking
+3. SLA/TAT Prediction
+4. Breach Alerts
+5. Executive Dashboard
+6. AI-Powered Insights
+
+Optimized for:
+- Assignment submission
+- 2-hour implementation window
+- High demo impact
+- Strong AI visibility
+
+==================================================
+TECH STACK
+==================================================
+
+Frontend:
+- Next.js 15
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Recharts
+
+Backend:
+- FastAPI
+- REST APIs
+- JWT Authentication
+- Role-Based Access Control
+
+Database:
+- PostgreSQL
+
+Cache & Background Jobs:
+- Redis
+- Celery
+
+AI Layer:
+- Historical Analytics Engine
+- Prediction Engine
+- Kimi AI Explanation Layer
+
+Notifications:
+- Email (SMTP/Resend)
+- WhatsApp (Mock/Twilio)
+
+==================================================
+SYSTEM ARCHITECTURE
+==================================================
+
+Frontend (Next.js)
+    |
+    v
+FastAPI Backend
+    |
+    +-- Order Management Service
+    +-- Inventory Management Service
+    +-- SLA & Workflow Service
+    +-- Prediction & Analytics Service
+    +-- Alert Service
+    |
+    v
+PostgreSQL
+
+FastAPI Backend
+    |
+    v
+AI Layer
+    |
+    +-- Historical Order Analytics
+    +-- Feature Engineering
+    +-- Prediction Engine
+    +-- Kimi AI Explanation Layer
+
+Prediction Results
+    |
+    v
+Alerts
+    |
+    +-- Email
+    +-- WhatsApp
+
+==================================================
+USER ROLES
+==================================================
+
+Admin
+- Full access
+
+Operations Manager
+- Manage orders
+- View dashboard
+- Receive alerts
+
+QC Manager
+- Manage QC status
+- Log QC failures
+
+==================================================
+ORDER SOURCES
+==================================================
+
+- Website
+- Retail Stores
+- Marketplaces
+- Sales Representatives
+
+==================================================
+ORDER LIFECYCLE
+==================================================
+
+Order Placed
+    ↓
+Inventory Check
+    ↓
+Lens Manufacturing
+    ↓
+Coating
+    ↓
+Frame Assembly
+    ↓
+Quality Check
+    ↓
+Packaging
+    ↓
+Dispatch
+    ↓
+Delivered
+
+QC Failure Flow:
+
+Quality Check
+    ↓
+QC Failed
+    ↓
+Rework
+    ↓
+Quality Check
+
+==================================================
+MODULE 1: INVENTORY INTELLIGENCE
+==================================================
+
+Features:
+- Lens inventory tracking
+- Smart inventory availability check
+- Vendor procurement when unavailable
+- Inventory health score
+- Demand forecasting
+- Restock recommendations
+
+Inventory Logic:
+
+If Lens Available:
+    Reserve Stock
+    Continue Processing
+
+If Lens Unavailable:
+    Vendor Procurement
+    Extended SLA
+    Continue Processing
+
+AI Output:
+
+Power     Demand    Recommendation
+----------------------------------
+-1.50     120       Restock
+-2.00      95       Restock
++4.00       4       Overstocked
+
+==================================================
+MODULE 2: ORDER MANAGEMENT
+==================================================
+
+Features:
+- Create Orders
+- Update Status
+- Order Tracking
+- Status Timeline
+- Delay Reason Logging
+- Filters
+
+Filters:
+- Status
+- Lens Type
+- Store Location
+
+==================================================
+MODULE 3: SLA BREACH PREDICTION
+==================================================
+
+Input Features:
+- Lens Type
+- Lens Index
+- Coating
+- Current Stage
+- Inventory Availability
+- Store Location
+- Historical Performance
+
+Output:
+
+Risk Score
+Predicted Completion Time
+Expected Delay
+Breach Flag
+
+Example:
+
+Risk Score: 87%
+
+Predicted Completion:
+72 Hours
+
+SLA:
+48 Hours
+
+Expected Delay:
+24 Hours
+
+==================================================
+MODULE 4: AI EXPLANATION LAYER
+==================================================
+
+Powered by Kimi API
+
+Example Output:
+
+Risk Score: 87%
+
+AI Explanation:
+
+• Inventory unavailable in-house
+• Vendor procurement required
+• Coating stage backlog
+• Similar historical orders exceeded SLA
+
+Use Cases:
+
+✓ AI Delay Explanation
+✓ SLA Risk Explanation
+✓ Inventory Recommendations
+✓ Operational Insights
+
+==================================================
+MODULE 5: EXECUTIVE DASHBOARD
+==================================================
+
+KPI Cards:
+
+- Total Orders
+- Orders At Risk
+- SLA Breaches
+- Inventory Health Score
+- Forecast Accuracy
+- Procurement Requests
+
+Dashboard Sections:
+
+1. Executive KPIs
+2. AI Risk Center
+3. Inventory Intelligence
+4. Live Orders Table
+
+==================================================
+AI RISK CENTER
+==================================================
+
+Order     Risk     Delay
+--------------------------
+ORD001    92%      +18h
+ORD002    81%      +10h
+
+Each Order Shows:
+
+- Risk Score
+- Predicted Delay
+- AI Explanation
+- Expected Completion
+
+==================================================
+DATABASE TABLES
+==================================================
+
+users
+- id
+- name
+- email
+- role
+- password
+
+orders
+- id
+- order_number
+- customer_name
+- power
+- lens_type
+- lens_index
+- coating
+- frame
+- store_location
+- inventory_available
+- current_status
+- sla_hours
+- predicted_completion_hours
+- risk_score
+
+inventory
+- id
+- power
+- lens_type
+- lens_index
+- quantity
+- forecast_demand
+- recommendation
+
+order_status_history
+- id
+- order_id
+- status
+- changed_by
+- timestamp
+
+delay_logs
+- id
+- order_id
+- reason
+- logged_by
+- created_at
+
+==================================================
+FASTAPI SERVICES
+==================================================
+
+1. Order Management Service
+- Create Orders
+- Update Orders
+- Manage Lifecycle
+- Status Tracking
+
+2. Inventory Management Service
+- Inventory Check
+- Inventory Reservation
+- Procurement Handling
+- Inventory Forecast
+
+3. SLA & Workflow Service
+- SLA Configuration
+- Workflow Management
+- TAT Calculation
+
+4. Prediction & Analytics Service
+- Risk Scoring
+- TAT Prediction
+- Demand Forecasting
+- Insights
+
+5. Alert Service
+- Alert Generation
+- Breach Detection
+- Email Notifications
+- WhatsApp Notifications
+
+==================================================
+API ENDPOINTS
+==================================================
+
+Authentication:
+
+POST /api/auth/login
+POST /api/auth/logout
+
+Orders:
+
+GET /api/orders
+POST /api/orders
+GET /api/orders/{id}
+PATCH /api/orders/{id}/status
+
+Inventory:
+
+GET /api/inventory
+PATCH /api/inventory/{id}
+GET /api/inventory/recommendations
+
+Dashboard:
+
+GET /api/dashboard
+GET /api/dashboard/risk-orders
+
+AI:
+
+POST /api/ai/predict-sla
+POST /api/ai/explain-risk
+GET /api/ai/forecast
+
+==================================================
+AI LAYER
+==================================================
+
+Historical Order Data
+        |
+        v
+Feature Engineering
+        |
+        v
+Prediction Engine
+        |
+        v
+Kimi AI Explanation Layer
+        |
+        v
+Human Readable Insights
+
+Use Cases:
+
+✓ TAT Prediction
+✓ SLA Breach Prediction
+✓ Inventory Demand Forecasting
+✓ Stock Recommendation
+✓ AI Delay Explanation
+
+==================================================
+MOCK DATA
+==================================================
+
+Inventory Records:
+100
+
+Historical Orders:
+500
+
+Active Orders:
+50
+
+==================================================
+DEMO FLOW (15 MINUTES)
+==================================================
+
+1. Login
+
+2. Executive Dashboard
+   - KPI Cards
+   - Risk Orders
+   - Inventory Health
+
+3. Orders Page
+   - Filters
+   - Status Updates
+
+4. Risk Center
+   - Risk Score
+   - Delay Prediction
+   - AI Explanation
+
+5. Inventory Intelligence
+   - Demand Forecast
+   - Restock Recommendations
+
+6. Architecture Walkthrough
+
+==================================================
+SUCCESS CRITERIA
+==================================================
+
+✓ Assignment Requirements Covered
+✓ AI Clearly Visible
+✓ Professional Architecture
+✓ FastAPI Backend
+✓ PostgreSQL Database
+✓ Kimi AI Integration
+✓ Executive Dashboard
+✓ Inventory Intelligence
+✓ SLA Prediction
+✓ Strong Demo Value

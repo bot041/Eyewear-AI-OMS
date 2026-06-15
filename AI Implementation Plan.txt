@@ -1,0 +1,133 @@
+AI IMPLEMENTATION PLAN (FINAL VERSION)
+
+Project: AI-Powered Eyewear Order Management System
+
+AI MODULES
+1. TAT Prediction
+   - Model: RandomForestRegressor
+   - Predicts completion time using:
+     Store, Lens Type, Power, Lens Index, Coating,
+     Inventory Availability, Procurement Needed,
+     Current Stage, QC Failure.
+   - Output:
+     Predicted Completion Hours
+
+2. SLA Breach Prediction
+   - Model: RandomForestClassifier
+   - Predicts:
+     Risk Score, Breach Probability, Breach Flag
+
+3. Inventory Demand Forecasting
+   - Model: Prophet
+   - Lens Powers:
+     -6.00 to +6.00 in 0.25 increments
+   - Stores:
+     Bangalore, Mumbai, Delhi
+   - Output:
+     Demand Forecast, Inventory Health
+
+4. Inventory Recommendation Engine
+   - Uses forecast + current stock
+   - Outputs:
+     Restock Recommendation
+     Overstock Warning
+     Inventory Health Score
+
+5. Explainable AI
+   - Model: Kimi API
+   - Generates human-readable explanations
+   - Example:
+     Inventory unavailable
+     Vendor procurement required
+     Coating backlog detected
+
+6. Recommended Actions Engine
+   - Model: Kimi API
+   - Generates actions such as:
+     Prioritize order
+     Expedite procurement
+     Move to express queue
+
+7. Proactive Alerts
+   - Triggered by high risk score
+   - Channels:
+     Email, WhatsApp
+
+SYNTHETIC TRAINING DATA
+
+Historical Orders:
+500–1000
+
+Stores:
+- Bangalore (Fastest)
+- Mumbai (Average)
+- Delhi (Average)
+
+Lens Types:
+- Single Vision
+- Progressive
+- Blue Cut
+- Photochromic
+- Anti-Glare
+- High Index
+- Computer Vision
+
+QC Failure Rates:
+Single Vision -> 2%
+Blue Cut -> 4%
+Anti-Glare -> 5%
+Progressive -> 8%
+Photochromic -> 10%
+High Index -> 7%
+Computer Vision -> 4%
+
+Inventory Availability:
+Common Powers -> 95%
+Medium Powers -> 75%
+Rare Powers -> 35%
+
+Vendor Procurement Delays:
+40% -> +24 Hours
+35% -> +48 Hours
+20% -> +72 Hours
+5%  -> +96 Hours
+
+DATABASE ADDITIONS
+
+orders:
+- delivered_at
+- predicted_completion_hours
+- risk_score
+- breach_flag
+- procurement_needed
+
+inventory_consumption:
+- inventory_id
+- date
+- quantity_used
+
+predictions_log:
+- order_id
+- predicted_completion
+- actual_completion
+- prediction_date
+
+DEPENDENCIES
+
+- scikit-learn
+- pandas
+- joblib
+- prophet
+- httpx
+- numpy
+
+FINAL EVALUATOR PITCH
+
+AI is used in four major operational areas:
+
+1. Random Forest Regression predicts order completion time (TAT).
+2. Random Forest Classification predicts SLA breach risk.
+3. Prophet forecasting predicts future lens demand and drives inventory planning.
+4. Kimi AI generates explanations, recommendations, and proactive operational alerts.
+
+This ensures AI assists at every critical stage of the order lifecycle, from inventory planning to delivery risk management.
