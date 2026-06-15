@@ -11,7 +11,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: "https://eyewareaioms.vercel.app,http://localhost:3000,http://127.0.0.1:3000"
+        value: "https://eyewareaioms-eceestvdx-bhuvan-kambad-s-projects.vercel.app,http://localhost:3000,http://127.0.0.1:3000"
       - key: OPERATIONS_EMAIL
         value: "samasur018@gmail.com"
       - key: EMAIL_FROM
