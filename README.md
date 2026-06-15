@@ -113,3 +113,8 @@ The current AI layer is implemented as a deterministic analytics and prediction 
 3. Pass the order features and predicted risk to the model and return the generated text.
 
 The schema and frontend already expect a plain-text explanation string.
+
+Author
+
+Bhuvan Kambad
+bkambad041@gmail.com
