@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: eluno-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./oms.db
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "https://eyewareaioms.vercel.app,http://localhost:3000,http://127.0.0.1:3000"
+      - key: OPERATIONS_EMAIL
+        value: "samasur018@gmail.com"
+      - key: EMAIL_FROM
+        value: "samasur018@gmail.com"
+      - key: ALERT_FROM_EMAIL
+        value: "samasur018@gmail.com"
+      - key: ALERT_TO_EMAIL
+        value: "samasur018@gmail.com"
+      - key: SMTP_HOST
+        value: "smtp.gmail.com"
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USERNAME
+        value: "samasur018@gmail.com"
+      - key: SMTP_PASSWORD
+        sync: false
