@@ -266,3 +266,4 @@ class AlertTestResponse(BaseModel):
     risk_score: int
     status: str
     message: str
+    provider: str = "unknown"

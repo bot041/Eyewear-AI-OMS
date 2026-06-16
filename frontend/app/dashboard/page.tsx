@@ -40,6 +40,7 @@ export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
   const [sendMailLoading, setSendMailLoading] = useState(false);
   const [sendMailMessage, setSendMailMessage] = useState("");
+  const [emailConfig, setEmailConfig] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -50,6 +51,9 @@ export default function DashboardPage() {
     apiFetch("/api/dashboard", {}, token)
       .then(setData)
       .catch((err) => setError(err.message));
+    apiFetch("/api/alerts/email-config", {}, token)
+      .then(setEmailConfig)
+      .catch(() => setEmailConfig(null));
   }, [token]);
 
   const sendTestMail = async () => {
@@ -58,7 +62,8 @@ export default function DashboardPage() {
     setSendMailMessage("");
     try {
       const res = await apiFetch("/api/alerts/send-test", { method: "POST" }, token);
-      setSendMailMessage(`Email ${res.status} for order ${res.order_id} (risk ${res.risk_score}%). ${res.message}`);
+      const providerLabel = res.provider ? `[${res.provider.toUpperCase()}] ` : "";
+      setSendMailMessage(`${providerLabel}Email ${res.status} for order ${res.order_id} (risk ${res.risk_score}%). ${res.message}`);
       // Refresh dashboard to update alerts table and KPI
       const updated = await apiFetch("/api/dashboard", {}, token);
       setData(updated);
@@ -108,8 +113,23 @@ export default function DashboardPage() {
                 <Mail className="h-4 w-4" />
                 {sendMailLoading ? "Sending..." : "Send Mail to samasur018@gmail.com"}
               </button>
+              {emailConfig && (
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                    emailConfig.resend_enabled || emailConfig.smtp_enabled
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-amber-100 text-amber-700"
+                  }`}
+                >
+                  {emailConfig.resend_enabled
+                    ? "Resend"
+                    : emailConfig.smtp_enabled
+                    ? "SMTP"
+                    : "Mock"}
+                </span>
+              )}
               {sendMailMessage && (
-                <span className={`text-sm ${sendMailMessage.includes("Failed") ? "text-red-600" : "text-emerald-700"}`}>
+                <span className={`text-sm ${sendMailMessage.includes("Failed") || sendMailMessage.includes("mock") ? "text-red-600" : "text-emerald-700"}`}>
                   {sendMailMessage}
                 </span>
               )}

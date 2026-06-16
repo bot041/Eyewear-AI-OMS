@@ -5,7 +5,12 @@ from app.database import get_db
 from app import models, schemas
 from app.dependencies import get_current_user, require_role
 from app.services.prediction import predict_sla, enrich_prediction_with_llm
-from app.services.email_service import send_high_risk_alert
+from app.services.email_service import (
+    send_high_risk_alert,
+    get_email_provider_status,
+    RESEND_ENABLED,
+    SMTP_ENABLED,
+)
 
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 
@@ -37,11 +42,13 @@ async def test_alert(
     db.commit()
 
     sent = send_high_risk_alert(db, order)
+    provider = "resend" if RESEND_ENABLED else "smtp" if SMTP_ENABLED else "mock"
     return schemas.AlertTestResponse(
         order_id=order.id,
         risk_score=order.risk_score,
         status="sent" if sent else "failed",
         message="High-risk alert email dispatched." if sent else "Failed to dispatch alert email.",
+        provider=provider,
     )
 
 
@@ -75,9 +82,20 @@ async def send_test_alert_to_operations(
     db.commit()
 
     sent = send_high_risk_alert(db, order)
+    provider = "resend" if RESEND_ENABLED else "smtp" if SMTP_ENABLED else "mock"
     return schemas.AlertTestResponse(
         order_id=order.id,
         risk_score=order.risk_score,
         status="sent" if sent else "failed",
         message="Test alert email dispatched to samasur018@gmail.com." if sent else "Failed to dispatch test alert email.",
+        provider=provider,
     )
+
+
+
+@router.get("/email-config")
+def email_config_status(
+    current_user: models.User = Depends(require_role(["admin", "operations_manager"])),
+):
+    """Return the active email provider configuration (no secrets exposed)."""
+    return get_email_provider_status()

@@ -1,3 +1,4 @@
+import logging
 import smtplib
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
@@ -10,12 +11,17 @@ import resend
 from app import models
 from app.config import settings
 
+logger = logging.getLogger(__name__)
 
 RESEND_ENABLED = bool(settings.resend_api_key)
 if RESEND_ENABLED:
     resend.api_key = settings.resend_api_key
 
 SMTP_ENABLED = bool(settings.smtp_host and settings.smtp_username and settings.smtp_password)
+
+logger.info(f"Email provider status: RESEND={RESEND_ENABLED}, SMTP={SMTP_ENABLED}")
+if SMTP_ENABLED:
+    logger.info(f"SMTP host={settings.smtp_host}, port={settings.smtp_port}, username={settings.smtp_username}")
 
 
 def build_alert_email(order: models.Order) -> Dict[str, str]:
@@ -143,16 +149,21 @@ def _send_smtp_email(recipient: str, subject: str, html_body: str, text_body: st
         msg.attach(MIMEText(text_body, "plain"))
         msg.attach(MIMEText(html_body, "html"))
 
+        # Gmail app passwords may contain spaces; strip them for login
+        smtp_password = settings.smtp_password.replace(" ", "") if settings.smtp_password else ""
+
         with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
             server.starttls()
-            server.login(settings.smtp_username, settings.smtp_password)
+            server.login(settings.smtp_username, smtp_password)
             server.sendmail(
                 settings.alert_from_email or settings.smtp_username,
                 [recipient],
                 msg.as_string(),
             )
+        logger.info(f"SMTP email sent successfully to {recipient}")
         return True
-    except Exception:
+    except Exception as e:
+        logger.error(f"SMTP send failed: {type(e).__name__}: {e}")
         return False
 
 
@@ -183,7 +194,8 @@ def send_high_risk_alert(db: Session, order: models.Order) -> bool:
             alert.sent_at = datetime.utcnow()
             db.commit()
             return True
-        except Exception:
+        except Exception as e:
+            logger.error(f"Resend failed: {type(e).__name__}: {e}")
             alert = log_email_delivery(db, order, recipient, "failed", subject, text_body)
             db.commit()
             return False
@@ -198,7 +210,22 @@ def send_high_risk_alert(db: Session, order: models.Order) -> bool:
         return sent
 
     # No provider configured: log as sent (mock) so the flow can still be demoed
+    logger.warning("No email provider configured; using mock fallback")
     alert = log_email_delivery(db, order, recipient, "sent (mock)", subject, text_body)
     alert.sent_at = datetime.utcnow()
     db.commit()
     return True
+
+
+def get_email_provider_status() -> dict:
+    """Return non-sensitive email configuration status."""
+    return {
+        "resend_enabled": RESEND_ENABLED,
+        "smtp_enabled": SMTP_ENABLED,
+        "smtp_host": settings.smtp_host,
+        "smtp_username": settings.smtp_username,
+        "alert_from_email": settings.alert_from_email,
+        "alert_to_email": settings.alert_to_email,
+        "operations_email": settings.operations_email,
+        "email_from": settings.email_from,
+    }
